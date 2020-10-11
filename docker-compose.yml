@@ -1,0 +1,50 @@
+version: "3.8"
+services:
+    nginx:
+        build:
+            context: .
+            dockerfile: ./docker/nginx.Dockerfile
+        image: 999999999999.dkr.ecr.us-east-1.amazonaws.com/laravel:nginx
+        restart: always
+        depends_on:
+            - php
+        ports:
+            - "80"
+        networks:
+            - default
+        deploy:
+            replicas: 1
+            resources:
+                limits:
+                    # cpus: "0.50"
+                    memory: 50M
+                reservations:
+                    # cpus: "0.25"
+                    memory: 30M
+            restart_policy:
+                condition: any
+                delay: 5s
+                window: 120s
+
+    php:
+        build:
+            context: .
+            dockerfile: ./docker/php.Dockerfile
+        image: 999999999999.dkr.ecr.us-east-1.amazonaws.com/laravel:php
+        working_dir: /app
+        env_file: .env
+        restart: always
+        expose:
+            - "9000"
+        deploy:
+            replicas: 1
+            resources:
+                limits:
+                    # cpus: "0.50"
+                    memory: 128M
+                reservations:
+                    # cpus: "0.25"
+                    memory: 64M
+            restart_policy:
+                condition: any
+                window: 120s
